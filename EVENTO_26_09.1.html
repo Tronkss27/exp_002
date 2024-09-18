@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eco-Tech Cocktail Innovation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-green: #2ecc71;
+            --secondary-green: #27ae60;
+            --light-green: #a9dfbf;
+            --accent-yellow: #f1c40f;
+            --background: #ecf0f1;
+            --text-dark: #2c3e50;
+            --text-light: #ffffff;
+            --shadow: rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--background);
+            color: var(--text-dark);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: var(--text-light);
+            border-radius: 20px;
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 600px;
+            box-shadow: 0 10px 30px var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            color: var(--primary-green);
+            margin-bottom: 1.5rem;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .welcome, .question {
+            text-align: center;
+            margin-bottom: 2rem;
+            font-weight: 400;
+            line-height: 1.6;
+            color: var(--text-dark);
+        }
+
+        .options {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .option {
+            background-color: var(--light-green);
+            border: none;
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--text-dark);
+            font-weight: 500;
+            text-align: left;
+            display: flex;
+            align-items: center;
+        }
+
+        .option:hover, .option:focus {
+            background-color: var(--primary-green);
+            color: var(--text-light);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px var(--shadow);
+        }
+
+        .option-icon {
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+
+        #result {
+            text-align: center;
+            display: none;
+        }
+
+        #cocktailName {
+            font-size: 2rem;
+            color: var(--primary-green);
+            margin: 1rem 0;
+            font-weight: 700;
+        }
+
+        #cocktailDescription, #ecoImpact {
+            margin-bottom: 2rem;
+            line-height: 1.6;
+            color: var(--text-dark);
+        }
+
+        #resetBtn {
+            background-color: var(--accent-yellow);
+            color: var(--text-dark);
+            border: none;
+            padding: 0.8rem 2rem;
+            font-size: 1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        #resetBtn:hover, #resetBtn:focus {
+            background-color: #f39c12;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px var(--shadow);
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 8px;
+            background-color: var(--light-green);
+            border-radius: 4px;
+            margin-top: 2rem;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-bar {
+            width: 0;
+            height: 100%;
+            background-color: var(--primary-green);
+            transition: width 0.5s ease;
+            position: relative;
+        }
+
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            background-image: linear-gradient(
+                -45deg,
+                rgba(255, 255, 255, .2) 25%,
+                transparent 25%,
+                transparent 50%,
+                rgba(255, 255, 255, .2) 50%,
+                rgba(255, 255, 255, .2) 75%,
+                transparent 75%,
+                transparent
+            );
+            z-index: 1;
+            background-size: 50px 50px;
+            animation: move 2s linear infinite;
+            overflow: hidden;
+        }
+
+        @keyframes move {
+            0% {
+                background-position: 0 0;
+            }
+            100% {
+                background-position: 50px 50px;
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.8s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .loading {
+            display: none;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+            flex-direction: column;
+        }
+
+        .loading-text {
+            margin-top: 1rem;
+            font-weight: 600;
+            color: var(--primary-green);
+        }
+
+        .eco-loader {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 5px solid var(--light-green);
+            border-top: 5px solid var(--primary-green);
+            animation: spin 1s linear infinite, grow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes grow {
+            0% { transform: scale(0.8); }
+            100% { transform: scale(1.2); }
+        }
+
+        .eco-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(var(--light-green) 2px, transparent 2px),
+                radial-gradient(var(--light-green) 2px, transparent 2px);
+            background-size: 30px 30px;
+            background-position: 0 0, 15px 15px;
+            opacity: 0.2;
+            z-index: -1;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 2rem;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .option {
+                padding: 0.8rem 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="eco-pattern"></div>
+        <div id="welcome">
+            <h1>Eco-Tech Cocktail Innovation</h1>
+            <p class="welcome fade-in">Benvenuti all'esperienza di mixology sostenibile. Scopriamo insieme il cocktail che meglio rappresenta il vostro approccio all'innovazione e al design ecologico.</p>
+            <button id="startBtn" class="option fade-in" onclick="startQuiz()">Inizia l'Eco-Esperienza</button>
+        </div>
+        <div id="quiz" style="display: none;">
+            <p class="question fade-in" id="questionText"></p>
+            <div class="options" id="optionsContainer"></div>
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+        </div>
+        <div id="result" style="display: none;">
+            <h2 id="cocktailName" class="fade-in"></h2>
+            <p id="cocktailDescription" class="fade-in"></p>
+            <p id="ecoImpact" class="fade-in"></p>
+            <button id="resetBtn" onclick="resetQuiz()">Rinnova l'Esperienza</button>
+        </div>
+        <div class="loading" id="loading">
+            <div class="eco-loader"></div>
+            <p class="loading-text">Stiamo distillando la tua Eco-Esperienza...</p>
+        </div>
+    </div>
+
+    <script>
+        const cocktails = {
+            "Eco Jalapeño Margarita": {
+                name: "Eco Jalapeño Margarita",
+                description: "Un twist piccante sul classico, con tequila, succo di lime fresco, sciroppo d'agave naturale e un tocco di jalapeño per un kick sostenibile.",
+                profile: {
+                    innovazione: 7,
+                    sostenibilità: 8,
+                    complessità: 6,
+                    freschezza: 9,
+                    energia: 8
+                }
+            },
+            "Grapefruit Negroni": {
+                name: "Grapefruit Negroni",
+                description: "Una versione rinfrescante del Negroni, con tequila, liquore al pompelmo e bitter. Un equilibrio perfetto tra dolce e amaro.",
+                profile: {
+                    innovazione: 6,
+                    sostenibilità: 7,
+                    complessità: 8,
+                    freschezza: 7,
+                    energia: 6
+                }
+            },
+            "Green Pepper Gimlet": {
+                name: "Green Pepper Gimlet",
+                description: "Un Gimlet innovativo con gin, succo di limone fresco e uno sciroppo di friggitelli. Un cocktail che unisce freschezza e un sottile sapore vegetale.",
+                profile: {
+                    innovazione: 9,
+                    sostenibilità: 8,
+                    complessità: 7,
+                    freschezza: 8,
+                    energia: 7
+                }
+            },
+            "Citrus Spritz": {
+                name: "Citrus Spritz",
+                description: "Un cocktail leggero e rinfrescante con vodka, Aperol, succo di limone e cedrata. Perfetto per le giornate calde.",
+                profile: {
+                    innovazione: 5,
+                    sostenibilità: 6,
+                    complessità: 4,
+                    freschezza: 10,
+                    energia: 7
+                }
+            },
+            "Yuzu Whisky Sour": {
+                name: "Yuzu Whisky Sour",
+                description: "Un sour sofisticato con whisky, sciroppo di yuzu, succo di limone e un tocco di Stillabunt. Un mix equilibrato di dolce, aspro e amaro.",
+                profile: {
+                    innovazione: 8,
+                    sostenibilità: 7,
+                    complessità: 9,
+                    freschezza: 6,
+                    energia: 7
+                }
+            },
+            "Violet Sky": {
+                name: "Violet Sky",
+                description: "Un cocktail floreale e fruttato con liquore alla violetta, liquore all'albicocca, succo di limone, sciroppo di zucchero e un top di soda.",
+                profile: {
+                    innovazione: 7,
+                    sostenibilità: 6,
+                    complessità: 5,
+                    freschezza: 8,
+                    energia: 6
+                }
+            }
+        };
+
+        const questions = [
+            {
+                question: "Quale aspetto dell'architettura sostenibile vi appassiona di più?",
+                options: [
+                    { text: "Efficienza energetica", icon: "🌞", score: { sostenibilità: 2, innovazione: 1 } },
+                    { text: "Materiali eco-compatibili", icon: "🌿", score: { sostenibilità: 2, complessità: 1 } },
+                    { text: "Design bioclimatico", icon: "🏡", score: { sostenibilità: 1, innovazione: 2 } },
+                    { text: "Gestione idrica innovativa", icon: "💧", score: { sostenibilità: 1, freschezza: 2 } },
+                    { text: "Integrazione tecnologica smart", icon: "🖥️", score: { innovazione: 2, complessità: 1 } },
+                    { text: "Conservazione della biodiversità", icon: "🦋", score: { sostenibilità: 2, freschezza: 1 } }
+                ]
+            },
+            {
+                question: "Quale sfida ingegneristica vi entusiasma maggiormente?",
+                options: [
+                    { text: "Strutture antisismiche avanzate", icon: "🏗️", score: { complessità: 2, innovazione: 1 } },
+                    { text: "Sistemi di trasporto sostenibili", icon: "🚊", score: { sostenibilità: 2, energia: 1 } },
+                    { text: "Energie rinnovabili innovative", icon: "🌬️", score: { innovazione: 2, energia: 1 } },
+                    { text: "Purificazione dell'aria urbana", icon: "🌳", score: { freschezza: 2, sostenibilità: 1 } },
+                    { text: "Riciclo e economia circolare", icon: "♻️", score: { sostenibilità: 2, complessità: 1 } },
+                    { text: "Automazione e AI nel design", icon: "🤖", score: { innovazione: 2, complessità: 1 } }
+                ]
+            },
+            {
+                question: "Quale elemento naturale ispira maggiormente i vostri progetti?",
+                options: [
+                    { text: "Fuoco: energia e trasformazione", icon: "🔥", score: { energia: 2, complessità: 1 } },
+                    { text: "Acqua: fluidità e adattabilità", icon: "🌊", score: { freschezza: 2, sostenibilità: 1 } },
+                    { text: "Terra: solidità e risorse", icon: "🏔️", score: { sostenibilità: 2, complessità: 1 } },
+                    { text: "Aria: leggerezza e innovazione", icon: "💨", score: { freschezza: 2, innovazione: 1 } },
+                    { text: "Luce: illuminazione e trasparenza", icon: "✨", score: { energia: 1, innovazione: 2 } },
+                    { text: "Verde: vita e crescita", icon: "🌱", score: { sostenibilità: 2, freschezza: 1 } }
+                ]
+            },
+            {
+                question: "Quale approccio innovativo preferite nel problem-solving?",
+                options: [
+                    { text: "Analisi dei dati e simulazioni", icon: "📊", score: { complessità: 2, innovazione: 1 } },
+                    { text: "Brainstorming creativo di gruppo", icon: "🧠", score: { innovazione: 2, energia: 1 } },
+                    { text: "Prototipazione rapida e iterazione", icon: "🛠️", score: { innovazione: 2, energia: 1 } },
+                    { text: "Ricerca interdisciplinare", icon: "🔬", score: { complessità: 2, innovazione: 1 } },
+                    { text: "Design thinking centrato sull'utente", icon: "👥", score: { sostenibilità: 1, freschezza: 2 } },
+                    { text: "Approccio biomimetico", icon: "🦎", score: { sostenibilità: 2, innovazione: 1 } }
+                ]
+            }
+        ];
+
+        let currentQuestion = 0;
+        let userProfile = {
+            innovazione: 0,
+            sostenibilità: 0,
+            complessità: 0,
+            freschezza: 0,
+            energia: 0
+        };
+
+        function startQuiz() {
+            document.getElementById('welcome').style.display = 'none';
+            document.getElementById('quiz').style.display = 'block';
+            displayQuestion();
+        }
+
+        function displayQuestion() {
+            const questionElement = document.getElementById('questionText');
+            questionElement.textContent = questions[currentQuestion].question;
+            questionElement.classList.remove('fade-in');
+            void questionElement.offsetWidth; // Trigger reflow
+            questionElement.classList.add('fade-in');
+
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = '';
+            questions[currentQuestion].options.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.innerHTML = `<span class="option-icon">${option.icon}</span> ${option.text}`;
+                button.className = 'option fade-in';
+                button.style.animationDelay = `${index * 0.1}s`;
+                button.onclick = () => handleAnswer(index);
+                optionsContainer.appendChild(button);
+            });
+
+            updateProgressBar();
+        }
+
+        function handleAnswer(optionIndex) {
+            const selectedOption = questions[currentQuestion].options[optionIndex];
+            for (let [key, value] of Object.entries(selectedOption.score)) {
+                userProfile[key] += value;
+            }
+
+            currentQuestion++;
+            if (currentQuestion < questions.length) {
+                displayQuestion();
+            } else {
+                showLoading();
+                setTimeout(showResult, 3000); // Simula un tempo di elaborazione
+            }
+        }
+
+        function updateProgressBar() {
+            const progress = ((currentQuestion + 1) / questions.length) * 100;
+            document.getElementById('progressBar').style.width = `${progress}%`;
+        }
+
+        function showLoading() {
+            document.getElementById('quiz').style.display = 'none';
+            document.getElementById('loading').style.display = 'flex';
+        }
+
+        function findBestMatch() {
+            let bestMatch = null;
+            let lowestDifference = Infinity;
+
+            for (let cocktail of Object.values(cocktails)) {
+                let totalDifference = 0;
+                for (let trait in userProfile) {
+                    totalDifference += Math.abs(cocktail.profile[trait] - userProfile[trait]);
+                }
+                if (totalDifference < lowestDifference) {
+                    lowestDifference = totalDifference;
+                    bestMatch = cocktail;
+                }
+            }
+
+            return bestMatch;
+        }
+
+        function showResult() {
+            document.getElementById('loading').style.display = 'none';
+            const recommendedCocktail = findBestMatch();
+            document.getElementById('result').style.display = 'block';
+            
+            const cocktailNameElement = document.getElementById('cocktailName');
+            cocktailNameElement.textContent = recommendedCocktail.name;
+            cocktailNameElement.classList.add('fade-in');
+
+            const cocktailDescElement = document.getElementById('cocktailDescription');
+            cocktailDescElement.textContent = recommendedCocktail.description;
+            cocktailDescElement.classList.add('fade-in');
+
+            const ecoImpactElement = document.getElementById('ecoImpact');
+            ecoImpactElement.textContent = getEcoImpact(recommendedCocktail);
+            ecoImpactElement.classList.add('fade-in');
+        }
+
+        function getEcoImpact(cocktail) {
+            const impacts = [
+                "Questo cocktail utilizza ingredienti locali e di stagione, riducendo l'impronta di carbonio del trasporto.",
+                "Il bicchiere è realizzato con materiali riciclati e può essere riutilizzato o riciclato dopo l'uso.",
+                "Gli scarti della preparazione vengono compostati per fertilizzare i nostri giardini urbani.",
+                "Utilizziamo tecniche di conservazione innovative per ridurre gli sprechi alimentari.",
+                "L'energia utilizzata per la preparazione proviene al 100% da fonti rinnovabili.",
+                "Parte del ricavato di questo cocktail viene destinato a progetti di riforestazione urbana."
+            ];
+            return impacts[Math.floor(Math.random() * impacts.length)];
+        }
+
+        function resetQuiz() {
+            currentQuestion = 0;
+            userProfile = {
+                innovazione: 0,
+                sostenibilità: 0,
+                complessità: 0,
+                freschezza: 0,
+                energia: 0
+            };
+            document.getElementById('result').style.display = 'none';
+            document.getElementById('welcome').style.display = 'block';
+        }
+
+        // Inizializza il quiz
+        document.getElementById('startBtn').addEventListener('click', startQuiz);
+    </script>
+<!-- Code injected by live-server -->
+<script>
+	// <![CDATA[  <-- For SVG support
+	if ('WebSocket' in window) {
+		(function () {
+			function refreshCSS() {
+				var sheets = [].slice.call(document.getElementsByTagName("link"));
+				var head = document.getElementsByTagName("head")[0];
+				for (var i = 0; i < sheets.length; ++i) {
+					var elem = sheets[i];
+					var parent = elem.parentElement || head;
+					parent.removeChild(elem);
+					var rel = elem.rel;
+					if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
+						var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
+						elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
+					}
+					parent.appendChild(elem);
+				}
+			}
+			var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
+			var address = protocol + window.location.host + window.location.pathname + '/ws';
+			var socket = new WebSocket(address);
+			socket.onmessage = function (msg) {
+				if (msg.data == 'reload') window.location.reload();
+				else if (msg.data == 'refreshcss') refreshCSS();
+			};
+			if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
+				console.log('Live reload enabled.');
+				sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
+			}
+		})();
+	}
+	else {
+		console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
+	}
+	// ]]>
+</script>
+</body>
+</html>
